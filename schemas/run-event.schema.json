@@ -48,8 +48,7 @@
     },
     "severity": {
       "type": "string",
-      "description": "Severity level of the event.",
-      "enum": ["info", "warning", "error", "critical"]
+      "description": "Severity level of the event.",      "enum": ["info", "warning", "error", "critical"]
     },
     "sequence": {
       "type": "integer",

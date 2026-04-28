@@ -43,8 +43,8 @@
     },
     "protocol_version": {
       "type": "string",
-      "description": "Protocol version this envelope conforms to, e.g., '0.1.0'.",
-      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+      "const": "0.1.0",
+      "description": "The exact IEF Protocol version this TaskEnvelope conforms to. For this schema version, the value must be '0.1.0'."
     },
     "created_at": {
       "type": "string",

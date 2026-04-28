@@ -68,8 +68,8 @@
     },
     "supported_protocol_version": {
       "type": "string",
-      "description": "The IEF Protocol version this agent supports, e.g., '0.1.0'.",
-      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+      "const": "0.1.0",
+      "description": "The exact IEF Protocol version this AgentCard conforms to. For this schema version, the value must be '0.1.0'."
     }
   },
   "additionalProperties": true
