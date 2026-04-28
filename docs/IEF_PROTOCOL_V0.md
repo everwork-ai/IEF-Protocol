@@ -58,7 +58,7 @@ Protocol is the **lingua franca** of IEF: every layer speaks it, no layer owns i
 | `runner_type` | string | yes | Runner type: `claude-code`, `codex`, `openclaw`, `hermes`, `generic`, or `custom:*` |
 | `version` | string | yes | Agent declaration version (semver) |
 | `description` | string | yes | Human-readable role and purpose |
-| `supported_protocol_version` | string | yes | IEF Protocol version supported (semver) |
+| `supported_protocol_version` | string (const) | yes | Exact IEF Protocol version this AgentCard conforms to — pinned to `"0.1.0"` for the v0.1.0 schema |
 
 **Capabilities structure:**
 
@@ -91,7 +91,7 @@ Custom runners use the `custom:` prefix (e.g., `custom:my-runner`).
 | `assignee` | string | yes | Agent or runner assigned to this task |
 | `governance_profile` | string | yes | Reference to a Governance profile (defined in IEF-Governance#2) |
 | `status` | string | yes | Current task status (values constrained by IEF-Operations#2) |
-| `protocol_version` | string | yes | Protocol version this envelope conforms to |
+| `protocol_version` | string (const) | yes | Exact IEF Protocol version this TaskEnvelope conforms to — pinned to `"0.1.0"` for the v0.1.0 schema |
 | `created_at` | string (date-time) | yes | When the task envelope was created |
 | `source` | string | yes | Origin of the task |
 | `priority` | string | yes | Task priority: `critical`, `high`, `medium`, `low` |
@@ -347,7 +347,7 @@ Operations **must** reference Protocol objects:
 - **ArtifactRef**: Operations tracks artifacts produced during runs
 - **ContextRef**: Operations passes context references during task assignment
 
-Operations **must not** redefine these objects. Operations extends behavior (lifecycle, transitions, queues) but uses Protocol schemas as the objectcontract.
+Operations **must not** redefine these objects. Operations extends behavior (lifecycle, transitions, queues) but uses Protocol schemas as the object contract.
 
 ### 5.2 Governance (IEF-Governance#2)
 
@@ -395,7 +395,23 @@ Protocol version follows [Semantic Versioning](https://semver.org/): `MAJOR.MINO
 
 Every `TaskEnvelope` must include `protocol_version`. `AgentCard` must declare `supported_protocol_version`.
 
-### 6.3 Compatibility Rules
+Both fields are pinned using `const` to the exact protocol version the schema implements. For the v0.1.0 schemas:
+- `TaskEnvelope.protocol_version` must be `"0.1.0"`
+- `AgentCard.supported_protocol_version` must be `"0.1.0"`
+
+A payload declaring `protocol_version: "2.0.0"` will **not** validate against the v0.1.0 schema.
+
+### 6.3 Version–Schema Agreement
+
+Versioned schema `$id` and declared protocol version **must agree**:
+
+1. A v0.1.0 `TaskEnvelope` must declare `protocol_version: "0.1.0"` — the `const` constraint enforces this.
+2. A v0.1.0 `AgentCard` must declare `supported_protocol_version: "0.1.0"` — the `const` constraint enforces this.
+3. A payload declaring a different protocol version **must not** validate against a v0.1.0 schema.
+4. Future protocol versions **must** publish new versioned schema `$id` paths and update `const` values accordingly.
+5. If multi-version agent support is needed in the future, it should be modeled explicitly (e.g., a `supported_protocol_versions` array), **not** by loosening the `const` constraint in a versioned schema.
+
+### 6.4 Compatibility Rules
 
 1. Consumers must ignore unknown fields (`additionalProperties: true` enables forward compatibility)
 2. New optional fields are minor-version changes
@@ -403,7 +419,7 @@ Every `TaskEnvelope` must include `protocol_version`. `AgentCard` must declare `
 4. New `event_type`, `type`, or `source_type` values are minor-version changes
 5. Consumers must handle unknown enum values gracefully (extensibility principle)
 
-### 6.4 Current Version
+### 6.5 Current Version
 
 `0.1.0` — Initial draft. All v0.x versions may have breaking changes between minor versions.
 
@@ -496,7 +512,7 @@ Relative paths **must** be converted to `file:///` or `https://` or `urn:ief:*` 
 | Reference | Relationship |
 |---|---|
 | [IEF-Program#6](https://github.com/everwork-ai/IEF-Program/issues/6) | P1-Contracts execution plan — coordinates this work with Governance#2 and Operations#2 |
-| [IEF-Governance#2](https://github.com/everwork-ai/IEF-Governance/issues/2) | Defines Contract-Critical profile that constrains this PR's merge criteria |
+| [IEF-Governance#2](https://github.com/everwork-ai/IEF-Gnowledge/issues/2) | Defines Contract-Critical profile that constrains this PR's merge criteria |
 | [IEF-Operations#2](https://github.com/everwork-ai/IEF-Operations/issues/2) | Must reference TaskEnvelope / RunEvent / ArtifactRef / ContextRef — must NOT redefine them |
 
 ---
