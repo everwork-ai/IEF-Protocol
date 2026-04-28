@@ -512,7 +512,7 @@ Relative paths **must** be converted to `file:///` or `https://` or `urn:ief:*` 
 | Reference | Relationship |
 |---|---|
 | [IEF-Program#6](https://github.com/everwork-ai/IEF-Program/issues/6) | P1-Contracts execution plan — coordinates this work with Governance#2 and Operations#2 |
-| [IEF-Governance#2](https://github.com/everwork-ai/IEF-Gnowledge/issues/2) | Defines Contract-Critical profile that constrains this PR's merge criteria |
+| [IEF-Governance#2](https://github.com/everwork-ai/IEF-Governance/issues/2) | Defines Contract-Critical profile that constrains this PR's merge criteria |
 | [IEF-Operations#2](https://github.com/everwork-ai/IEF-Operations/issues/2) | Must reference TaskEnvelope / RunEvent / ArtifactRef / ContextRef — must NOT redefine them |
 
 ---
