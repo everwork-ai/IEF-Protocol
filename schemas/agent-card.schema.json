@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://everwork-ai.github.io/ief-protocol/schemas/agent-card.schema.json",
+  "$id": "https://everwork-ai.github.io/ief-protocol/schemas/v0.1.0/agent-card.schema.json",
   "title": "AgentCard",
   "description": "A machine-readable declaration of an AI agent, runner, or worker's capabilities. Used by Runners for selection and by Adapters for host-surface mapping. The capabilities structure is an array of typed capability objects. runner_type uses a controlled vocabulary with extension support via 'custom:' prefix.",
   "type": "object",

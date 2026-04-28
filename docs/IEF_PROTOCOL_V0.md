@@ -142,7 +142,7 @@ Custom runners use the `custom:` prefix (e.g., `custom:my-runner`).
 | `task_id` | string | yes | Task that produced this artifact |
 | `run_id` | string | yes | Run that produced this artifact |
 | `type` | string | yes | Artifact type (extensible) |
-| `uri` | string (uri) | yes | Absolute URI pointing to the artifact |
+| `uri` | string (uri + pattern) | yes | Absolute URI pointing to the artifact |
 | `hash` | string | no | Content hash for verification (recommended) |
 | `created_at` | string (date-time) | yes | When the artifact was created |
 | `produced_by` | string | yes | Agent or runner that produced this artifact |
@@ -150,15 +150,20 @@ Custom runners use the `custom:` prefix (e.g., `custom:my-runner`).
 
 **Core artifact types:** `pr`, `commit`, `document`, `log`, `report`, `schema`, `test_result`, `review`
 
-**URI policy:** The `uri` field must be a valid absolute URI. Accepted URI schemes:
+**URI policy:** The `uri` field must be a valid absolute URI. Both `format: uri` and `pattern` are enforced:
+- `format: uri` — declarative URI syntax annotation
+- `pattern: ^[a-zA-Z][a-zA-Z0-9+.-]*:` — explicit absolute-URI assertion that guarantees a scheme component
+
+Accepted URI schemes:
 - `https://` — GitHub URLs, API endpoints
 - `file:///` — Local or repository-rooted file references
 - `urn:ief:artifact:...` — IEF-specific URN identifiers
 
-Plain relative file paths (e.g., `docs/spec.md`) are **not** accepted. If referencing a file, use `file:///` scheme with an absolute path.
+Relative paths (e.g., `docs/spec.md`) are **invalid** and will be rejected by the `pattern` constraint regardless of whether the validator enforces `format` assertions. Convert to `file:///` or `https://` or `urn:ief:*` scheme.
 
 **Key design decisions:**
 - URI must be a resolvable absolute URI — this ensures artifacts are unambiguously addressable across environments
+- Dual validation (`format` + `pattern`) ensures absolute-URI enforcement even when validators treat `format` as annotation-only
 - `hash` is optional but recommended for verifiable artifacts
 - `type` is extensible — consumers must handle unknown types gracefully
 
@@ -173,25 +178,30 @@ Plain relative file paths (e.g., `docs/spec.md`) are **not** accepted. If refere
 | `context_id` | string | yes | Globally unique context reference identifier |
 | `source_type` | string | yes | Type of source (extensible) |
 | `source_id` | string | yes | Identifier within the source domain |
-| `uri` | string (uri) | yes | Absolute URI pointing to the context source |
+| `uri` | string (uri + pattern) | yes | Absolute URI pointing to the context source |
 | `relevance_score` | number | yes | Relevance score (0.0–1.0) |
 | `retrieved_at` | string (date-time) | yes | When this context was retrieved |
 | `summary` | string | no | Brief summary for quick scanning |
 
 **Core source types:** `knowledge_entry`, `decision_record`, `run_summary`, `external_document`, `playbook`, `pattern`
 
-**URI policy:** The `uri` field must be a valid absolute URI. Accepted URI schemes:
+**URI policy:** The `uri` field must be a valid absolute URI. Both `format: uri` and `pattern` are enforced:
+- `format: uri` — declarative URI syntax annotation
+- `pattern: ^[a-zA-Z][a-zA-Z0-9+.-]*:` — explicit absolute-URI assertion that guarantees a scheme component
+
+Accepted URI schemes:
 - `https://` — GitHub URLs, API endpoints, documentation sites
 - `file:///` — Local or repository-rooted file references
 - `urn:ief:context:...` — IEF-specific URN identifiers
 
-Plain relative file paths (e.g., `docs/adr/001.md`) are **not** accepted. If referencing a file, use `file:///` scheme with an absolute path.
+Relative paths (e.g., `docs/adr/001.md`) are **invalid** and will be rejected by the `pattern` constraint regardless of whether the validator enforces `format` assertions. Convert to `file:///` or `https://` or `urn:ief:*` scheme.
 
 **Key design decisions:**
 - ContextRef is NOT the Knowledge storage itself
 - Knowledge (IEF-Knowledge) is responsible for producing and managing the content ContextRef points to
 - Protocol only defines the reference format
 - URI must be a resolvable absolute URI — this ensures context is unambiguously addressable
+- Dual validation (`format` + `pattern`) ensures absolute-URI enforcement even when validators treat `format` as annotation-only
 
 ---
 
@@ -337,7 +347,7 @@ Operations **must** reference Protocol objects:
 - **ArtifactRef**: Operations tracks artifacts produced during runs
 - **ContextRef**: Operations passes context references during task assignment
 
-Operations **must not** redefine these objects. Operations extends behavior (lifecycle, transitions, queues) but uses Protocol schemas as the object contract.
+Operations **must not** redefine these objects. Operations extends behavior (lifecycle, transitions, queues) but uses Protocol schemas as the objectcontract.
 
 ### 5.2 Governance (IEF-Governance#2)
 
@@ -423,37 +433,48 @@ Extensible enums (`event_type`, `type`, `source_type`, `runner_type`) follow the
 
 ## 8. Schema Resolution Strategy
 
-### 8.1 Schema `$id`
+### 8.1 Schema `$id` — Immutable and Versioned
 
-Every schema file defines a stable `$id` under the `https://everwork-ai.github.io/ief-protocol/schemas/` namespace:
+Every schema file defines an **immutable, versioned** `$id` under the `https://everwork-ai.github.io/ief-protocol/schemas/` namespace. The version is embedded in the URI path:
 
 | Schema | `$id` |
 |---|---|
-| AgentCard | `https://everwork-ai.github.io/ief-protocol/schemas/agent-card.schema.json` |
-| TaskEnvelope | `https://everwork-ai.github.io/ief-protocol/schemas/task-envelope.schema.json` |
-| RunEvent | `https://everwork-ai.github.io/ief-protocol/schemas/run-event.schema.json` |
-| ArtifactRef | `https://everwork-ai.github.io/ief-protocol/schemas/artifact-ref.schema.json` |
-| ContextRef | `https://everwork-ai.github.io/ief-protocol/schemas/context-ref.schema.json` |
+| AgentCard | `https://everwork-ai.github.io/ief-protocol/schemas/v0.1.0/agent-card.schema.json` |
+| TaskEnvelope | `https://everwork-ai.github.io/ief-protocol/schemas/v0.1.0/task-envelope.schema.json` |
+| RunEvent | `https://everwork-ai.github.io/ief-protocol/schemas/v0.1.0/run-event.schema.json` |
+| ArtifactRef | `https://everwork-ai.github.io/ief-protocol/schemas/v0.1.0/artifact-ref.schema.json` |
+| ContextRef | `https://everwork-ai.github.io/ief-protocol/schemas/v0.1.0/context-ref.schema.json` |
+
+**Immutability guarantee:** Once a versioned `$id` is published, its schema content **must not change**. A v0.1.0 schema `$id` will never be overwritten by a v0.2.0 release.
+
+**Breaking change rule:** When a schema introduces breaking changes (field removal, type change, new required fields), it **must** use a new `$id` path with an incremented version (e.g., `v0.2.0`). This prevents validators from applying a newer contract to older payloads.
+
+**Consumer guidance:** Consumers **should pin to exact `$id` / `protocol_version` values** to ensure deterministic validation. When upgrading protocol versions, both producer and consumer must align on the new `$id`.
 
 ### 8.2 Cross-File `$ref` Resolution
 
-`TaskEnvelope` uses `$ref` to reference `ContextRef` and `ArtifactRef` schemas. These references use the absolute `$id` URIs:
+`TaskEnvelope` uses `$ref` to reference `ContextRef` and `ArtifactRef` schemas. These references use the versioned `$id` URIs:
 
 ```json
 {
-  "$ref": "https://everwork-ai.github.io/ief-protocol/schemas/context-ref.schema.json"
+  "$ref": "https://everwork-ai.github.io/ief-protocol/schemas/v0.1.0/context-ref.schema.json"
 }
 ```
 
 This ensures deterministic resolution regardless of how schemas are loaded (file system, HTTP, or in-memory compilation). Validators that compile schemas from in-memory objects must register each schema by its `$id` so that `$ref` values resolve correctly.
 
+When a new protocol version is released (e.g., v0.2.0), TaskEnvelope's `$ref` values are updated to point to the new versioned URIs, while the v0.1.0 schemas remain available at their original `$id` paths.
+
 ### 8.3 URI Policy for Data Fields
 
-The `uri` fields in `ArtifactRef` and `ContextRef` use `format: uri` and require **valid absolute URIs**. This is a deliberate design choice:
+The `uri` fields in `ArtifactRef` and `ContextRef` use **dual validation** to enforce absolute URIs:
 
-1. **Ambiguity prevention** — Relative paths (e.g., `docs/spec.md`) are environment-dependent and ambiguous across IEF layers
-2. **Resolvability** — Absolute URIs are unambiguously resolvable regardless of execution context
-3. **Valid URI schemes** — `https://`, `file:///`, and `urn:ief:*` are the recommended schemes
+1. `format: uri` — declarative URI syntax annotation (may be annotation-only in some validators per JSON Schema draft 2020-12)
+2. `pattern: ^[a-zA-Z][a-zA-Z0-9+.-]*:` — explicit absolute-URI assertion that guarantees a scheme component
+
+This dual approach ensures absolute-URI enforcement even when validators treat `format` as annotation-only and do not enforce format assertions.
+
+**Valid URI schemes:**
 
 | Scheme | Example | Use Case |
 |---|---|---|
@@ -461,7 +482,12 @@ The `uri` fields in `ArtifactRef` and `ContextRef` use `format: uri` and require
 | `file:///` | `file:///repo/schemas/task-envelope.schema.json` | Local or repository-rooted file references |
 | `urn:ief:*` | `urn:ief:artifact:task-2026-001:pr-3` | IEF-specific identifiers |
 
-Plain relative file paths are **not** accepted by `format: uri` validation. If a file reference is needed, use the `file:///` scheme.
+**Invalid examples** (rejected by `pattern`):
+- `docs/spec.md` — relative path, no scheme
+- `../schemas/agent-card.schema.json` — relative path, no scheme
+- `README.md` — relative path, no scheme
+
+Relative paths **must** be converted to `file:///` or `https://` or `urn:ief:*` scheme to pass validation.
 
 ---
 
@@ -479,10 +505,10 @@ Plain relative file paths are **not** accepted by `format: uri` validation. If a
 
 | File | Object | `$id` |
 |---|---|---|
-| `schemas/agent-card.schema.json` | AgentCard | `https://everwork-ai.github.io/ief-protocol/schemas/agent-card.schema.json` |
-| `schemas/task-envelope.schema.json` | TaskEnvelope | `https://everwork-ai.github.io/ief-protocol/schemas/task-envelope.schema.json` |
-| `schemas/run-event.schema.json` | RunEvent | `https://everwork-ai.github.io/ief-protocol/schemas/run-event.schema.json` |
-| `schemas/artifact-ref.schema.json` | ArtifactRef | `https://everwork-ai.github.io/ief-protocol/schemas/artifact-ref.schema.json` |
-| `schemas/context-ref.schema.json` | ContextRef | `https://everwork-ai.github.io/ief-protocol/schemas/context-ref.schema.json` |
+| `schemas/agent-card.schema.json` | AgentCard | `https://everwork-ai.github.io/ief-protocol/schemas/v0.1.0/agent-card.schema.json` |
+| `schemas/task-envelope.schema.json` | TaskEnvelope | `https://everwork-ai.github.io/ief-protocol/schemas/v0.1.0/task-envelope.schema.json` |
+| `schemas/run-event.schema.json` | RunEvent | `https://everwork-ai.github.io/ief-protocol/schemas/v0.1.0/run-event.schema.json` |
+| `schemas/artifact-ref.schema.json` | ArtifactRef | `https://everwork-ai.github.io/ief-protocol/schemas/v0.1.0/artifact-ref.schema.json` |
+| `schemas/context-ref.schema.json` | ContextRef | `https://everwork-ai.github.io/ief-protocol/schemas/v0.1.0/context-ref.schema.json` |
 
 All schemas use JSON Schema draft 2020-12.
