@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TaskEnvelope",
+  "description": "A governed, dispatchable, traceable task envelope. TaskEnvelope is the exchange format for task objects — it is not the Operations state machine itself. Status values are constrained by the Operations specification (IEF-Operations#2).",
+  "type": "object",
+  "required": [
+    "task_id",
+    "title",
+    "description",
+    "assignee",
+    "governance_profile",
+    "status",
+    "protocol_version",
+    "created_at",
+    "source",
+    "priority"
+  ],
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "description": "Globally unique task identifier."
+    },
+    "title": {
+      "type": "string",
+      "description": "Human-readable task title."
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed task description."
+    },
+    "assignee": {
+      "type": "string",
+      "description": "Agent or runner assigned to this task. May be an agent_id or a runner identifier."
+    },
+    "governance_profile": {
+      "type": "string",
+      "description": "Reference to a governance profile defined by IEF-Governance (e.g., 'contract-critical', 'design-lite', 'implementation-controlled'). The profile name must correspond to a profile defined in IEF-Governance#2."
+    },
+    "status": {
+      "type": "string",
+      "description": "Current task status. The set of allowed values and transitions is defined by IEF-Operations#2. Protocol only provides the field; Operations owns the state machine."
+    },
+    "protocol_version": {
+      "type": "string",
+      "description": "Protocol version this envelope conforms to, e.g., '0.1.0'.",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when the task envelope was created."
+    },
+    "source": {
+      "type": "string",
+      "description": "Origin of the task (e.g., 'human', 'agent:codex', 'adapter:hermes', 'program')."
+    },
+    "priority": {
+      "type": "string",
+      "description": "Task priority level.",
+      "enum": ["critical", "high", "medium", "low"],
+      "default": "medium"
+    },
+    "context_refs": {
+      "type": "array",
+      "items": {
+        "$ref": "context-ref.schema.json"
+      },
+      "description": "References to knowledge, context, historical decisions, or external materials. Uses the ContextRef schema."
+    },
+    "artifact_refs": {
+      "type": "array",
+      "items": {
+        "$ref": "artifact-ref.schema.json"
+      },
+      "description": "References to task artifacts (outputs). Uses the ArtifactRef schema."
+    }
+  },
+  "additionalProperties": true
+}
