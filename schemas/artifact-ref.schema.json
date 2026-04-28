@@ -1,7 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://everwork-ai.github.io/ief-protocol/schemas/artifact-ref.schema.json",
   "title": "ArtifactRef",
-  "description": "A reference to a task artifact (tangible output). ArtifactRef points to the artifact but does not carry the artifact content itself. URI can point to a PR, commit, file, document, log, or report. hash is optional but recommended for verifiable artifacts. type is extensible.",
+  "description": "A reference to a task artifact (tangible output). ArtifactRef points to the artifact but does not carry the artifact content itself. URI must be a valid absolute URI. hash is optional but recommended for verifiable artifacts. type is extensible.",
   "type": "object",
   "required": [
     "artifact_id",
@@ -27,12 +28,12 @@
     },
     "type": {
       "type": "string",
-      "description": "Artifact type. Core types: 'pr', 'commit', 'file', 'document', 'log', 'report', 'schema', 'test_result', 'review'. Extensible — consumers must handle unknown types gracefully."
+      "description": "Artifact type. Core types: 'pr', 'commit', 'document', 'log', 'report', 'schema', 'test_result', 'review'. Extensible — consumers must handle unknown types gracefully."
     },
     "uri": {
       "type": "string",
       "format": "uri",
-      "description": "URI pointing to the artifact. Can be a GitHub URL, file path, or other resolvable URI."
+      "description": "Absolute URI pointing to the artifact. Must be a valid URI (e.g., https://github.com/..., file:///path/to/artifact, urn:ief:artifact:...). Plain relative file paths are NOT accepted."
     },
     "hash": {
       "type": "string",

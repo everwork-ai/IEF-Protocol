@@ -1,5 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://everwork-ai.github.io/ief-protocol/schemas/run-event.schema.json",
   "title": "RunEvent",
   "description": "A runtime event emitted during task execution. RunEvent is used in the Operations run ledger. event_type is extensible. sequence is used for append-only ledger ordering.",
   "type": "object",

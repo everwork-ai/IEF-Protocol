@@ -1,5 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://everwork-ai.github.io/ief-protocol/schemas/context-ref.schema.json",
   "title": "ContextRef",
   "description": "A reference to knowledge, context, historical decisions, run summaries, or external materials. ContextRef is NOT the Knowledge storage itself — Knowledge is responsible for producing and managing the content that ContextRef points to. Protocol only defines the reference format.",
   "type": "object",
@@ -27,7 +28,7 @@
     "uri": {
       "type": "string",
       "format": "uri",
-      "description": "URI pointing to the context source. Can be a GitHub URL, knowledge base path, or other resolvable URI."
+      "description": "Absolute URI pointing to the context source. Must be a valid URI (e.g., https://github.com/..., file:///path/to/context, urn:ief:context:...). Plain relative file paths are NOT accepted."
     },
     "relevance_score": {
       "type": "number",

@@ -1,5 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://everwork-ai.github.io/ief-protocol/schemas/task-envelope.schema.json",
   "title": "TaskEnvelope",
   "description": "A governed, dispatchable, traceable task envelope. TaskEnvelope is the exchange format for task objects — it is not the Operations state machine itself. Status values are constrained by the Operations specification (IEF-Operations#2).",
   "type": "object",
@@ -63,14 +64,14 @@
     "context_refs": {
       "type": "array",
       "items": {
-        "$ref": "context-ref.schema.json"
+        "$ref": "https://everwork-ai.github.io/ief-protocol/schemas/context-ref.schema.json"
       },
       "description": "References to knowledge, context, historical decisions, or external materials. Uses the ContextRef schema."
     },
     "artifact_refs": {
       "type": "array",
       "items": {
-        "$ref": "artifact-ref.schema.json"
+        "$ref": "https://everwork-ai.github.io/ief-protocol/schemas/artifact-ref.schema.json"
       },
       "description": "References to task artifacts (outputs). Uses the ArtifactRef schema."
     }
