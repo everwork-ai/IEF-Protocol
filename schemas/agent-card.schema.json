@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://everwork-ai.github.io/ief-protocol/schemas/v0.1.0/agent-card.schema.json",
+  "title": "AgentCard",
+  "description": "A machine-readable declaration of an AI agent, runner, or worker's capabilities. Used by Runners for selection and by Adapters for host-surface mapping. The capabilities structure is an array of typed capability objects. runner_type uses a controlled vocabulary with extension support via 'custom:' prefix.",
+  "type": "object",
+  "required": [
+    "agent_id",
+    "name",
+    "type",
+    "capabilities",
+    "runner_type",
+    "version",
+    "description",
+    "supported_protocol_version"
+  ],
+  "properties": {
+    "agent_id": {
+      "type": "string",
+      "description": "Globally unique agent identifier."
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable name of the agent."
+    },
+    "type": {
+      "type": "string",
+      "description": "Agent type classification. Core types: 'worker', 'runner', 'service', 'adapter', 'coordinator'. Extensible — consumers must handle unknown types."
+    },
+    "capabilities": {
+      "type": "array",
+      "description": "List of declared capabilities. Each capability is a typed object with a name and optional parameters.",
+      "items": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Capability name (e.g., 'code-generation', 'code-review', 'testing', 'documentation')."
+          },
+          "description": {
+            "type": "string",
+            "description": "Optional description of what this capability provides."
+          },
+          "parameters": {
+            "type": "object",
+            "description": "Optional key-value parameters for the capability (e.g., languages, frameworks, tools).",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": true
+      },
+      "minItems": 1
+    },
+    "runner_type": {
+      "type": "string",
+      "description": "Type of runner this agent uses. Core values: 'claude-code', 'codex', 'openclaw', 'hermes', 'generic'. Extensible via 'custom:' prefix (e.g., 'custom:my-runner').",
+      "pattern": "^(claude-code|codex|openclaw|hermes|generic|custom:.+)$"
+    },
+    "version": {
+      "type": "string",
+      "description": "Version of the agent declaration itself, following semver.",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "description": {
+      "type": "string",
+      "description": "Human-readable description of the agent's role and purpose."
+    },
+    "supported_protocol_version": {
+      "type": "string",
+      "const": "0.1.0",
+      "description": "The exact IEF Protocol version this AgentCard conforms to. For this schema version, the value must be '0.1.0'."
+    }
+  },
+  "additionalProperties": true
+}

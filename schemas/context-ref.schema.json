@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://everwork-ai.github.io/ief-protocol/schemas/v0.1.0/context-ref.schema.json",
+  "title": "ContextRef",
+  "description": "A reference to knowledge, context, historical decisions, run summaries, or external materials. ContextRef is NOT the Knowledge storage itself — Knowledge is responsible for producing and managing the content that ContextRef points to. Protocol only defines the reference format.",
+  "type": "object",
+  "required": [
+    "context_id",
+    "source_type",
+    "source_id",
+    "uri",
+    "relevance_score",
+    "retrieved_at"
+  ],
+  "properties": {
+    "context_id": {
+      "type": "string",
+      "description": "Globally unique context reference identifier."
+    },
+    "source_type": {
+      "type": "string",
+      "description": "Type of the source. Core types: 'knowledge_entry', 'decision_record', 'run_summary', 'external_document', 'playbook', 'pattern'. Extensible — consumers must handle unknown source types gracefully."
+    },
+    "source_id": {
+      "type": "string",
+      "description": "Identifier of the source entity within its source_type domain (e.g., a knowledge entry ID, a decision record number)."
+    },
+    "uri": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^[a-zA-Z][a-zA-Z0-9+.-]*:",
+      "description": "Absolute URI pointing to the context source. URI must be absolute; relative paths such as 'docs/adr/001.md' are invalid. Valid examples: https://github.com/everwork-ai/..., file:///repo/path/context.md, urn:ief:context:..."
+    },
+    "relevance_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Relevance score between 0.0 and 1.0 indicating how relevant this context is to the current task."
+    },
+    "retrieved_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when this context was retrieved."
+    },
+    "summary": {
+      "type": "string",
+      "description": "Optional brief summary of the context content, for quick scanning without resolving the URI."
+    }
+  },
+  "additionalProperties": true
+}

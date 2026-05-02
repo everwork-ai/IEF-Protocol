@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://everwork-ai.github.io/ief-protocol/schemas/v0.1.0/run-event.schema.json",
+  "title": "RunEvent",
+  "description": "A runtime event emitted during task execution. RunEvent is used in the Operations run ledger. event_type is extensible. sequence is used for append-only ledger ordering.",
+  "type": "object",
+  "required": [
+    "event_id",
+    "run_id",
+    "task_id",
+    "event_type",
+    "timestamp",
+    "agent_id",
+    "payload",
+    "severity",
+    "sequence"
+  ],
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "description": "Globally unique event identifier."
+    },
+    "run_id": {
+      "type": "string",
+      "description": "Identifier of the run this event belongs to."
+    },
+    "task_id": {
+      "type": "string",
+      "description": "Identifier of the task this event relates to."
+    },
+    "event_type": {
+      "type": "string",
+      "description": "Type of the event. Core types: 'started', 'progress', 'blocked', 'error', 'completed', 'artifact_produced', 'context_retrieved', 'approval_requested', 'handoff'. Extensible — consumers must ignore unknown event types."
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when the event occurred."
+    },
+    "agent_id": {
+      "type": "string",
+      "description": "Identifier of the agent or runner that emitted this event."
+    },
+    "payload": {
+      "type": "object",
+      "description": "Structured event payload. Content depends on event_type. Must be a JSON object.",
+      "additionalProperties": true
+    },
+    "severity": {
+      "type": "string",
+      "description": "Severity level of the event.",      "enum": ["info", "warning", "error", "critical"]
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Monotonically increasing sequence number for append-only ledger ordering within a run."
+    }
+  },
+  "additionalProperties": true
+}

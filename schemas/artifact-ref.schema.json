@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://everwork-ai.github.io/ief-protocol/schemas/v0.1.0/artifact-ref.schema.json",
+  "title": "ArtifactRef",
+  "description": "A reference to a task artifact (tangible output). ArtifactRef points to the artifact but does not carry the artifact content itself. URI must be a valid absolute URI. hash is optional but recommended for verifiable artifacts. type is extensible.",
+  "type": "object",
+  "required": [
+    "artifact_id",
+    "task_id",
+    "run_id",
+    "type",
+    "uri",
+    "created_at",
+    "produced_by"
+  ],
+  "properties": {
+    "artifact_id": {
+      "type": "string",
+      "description": "Globally unique artifact identifier."
+    },
+    "task_id": {
+      "type": "string",
+      "description": "Identifier of the task that produced this artifact."
+    },
+    "run_id": {
+      "type": "string",
+      "description": "Identifier of the run that produced this artifact."
+    },
+    "type": {
+      "type": "string",
+      "description": "Artifact type. Core types: 'pr', 'commit', 'document', 'log', 'report', 'schema', 'test_result', 'review'. Extensible — consumers must handle unknown types gracefully."
+    },
+    "uri": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^[a-zA-Z][a-zA-Z0-9+.-]*:",
+      "description": "Absolute URI pointing to the artifact. URI must be absolute; relative paths such as 'docs/spec.md' are invalid. Valid examples: https://github.com/everwork-ai/..., file:///repo/path/spec.md, urn:ief:artifact:..."
+    },
+    "hash": {
+      "type": "string",
+      "description": "Optional content hash for artifact verification (e.g., SHA-256). Recommended but not required."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when the artifact was created."
+    },
+    "produced_by": {
+      "type": "string",
+      "description": "Agent or runner that produced this artifact (agent_id or runner identifier)."
+    },
+    "description": {
+      "type": "string",
+      "description": "Optional human-readable description of the artifact."
+    }
+  },
+  "additionalProperties": true
+}
